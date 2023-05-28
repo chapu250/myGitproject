@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        #square {
+  width: 400px;
+  height: 400px;
+  position: relative;
+}
+
+.triangle {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 200px 200px 0 0;
+  border-color: #000 transparent transparent transparent;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.object {
+  width: 40px;
+  height: 40px;
+  background-color: red;
+  position: absolute;
+  top: 180px;
+  left: 180px;
+}
+
+    </style>
+</head>
+<body>
+    <div id="square">
+        <div class="triangle"></div>
+        <div class="triangle"></div>
+        <div class="triangle"></div>
+        <div class="triangle"></div>
+        <div class="triangle"></div>
+        <div class="triangle"></div>
+        <div class="triangle"></div>
+        <div class="triangle"></div>
+      </div>
+      
+      <div id="objects">
+        <div class="object" id="object1"></div>
+        <div class="object" id="object2"></div>
+        <div class="object" id="object3"></div>
+        <div class="object" id="object4"></div>
+        <div class="object" id="object5"></div>
+        <div class="object" id="object6"></div>
+      </div>
+      
+
+      <script>
+        // Get references to the objects and triangles
+const objects = document.querySelectorAll('.object');
+const triangles = document.querySelectorAll('.triangle');
+
+// Register click event listeners for objects
+objects.forEach(object => {
+  object.addEventListener('click', moveObject);
+});
+
+// Function to move the object to a specific triangle
+function moveObject() {
+  // Check if the triangle is empty
+  if (!this.classList.contains('occupied')) {
+    // Clear any occupied class from other triangles
+    triangles.forEach(triangle => triangle.classList.remove('occupied'));
+
+    // Add the occupied class to the target triangle
+    this.parentElement.classList.add('occupied');
+
+    // Move the object to the center of the triangle
+    const triangleRect = this.parentElement.getBoundingClientRect();
+    const objectRect = this.getBoundingClientRect();
+    const offsetX = triangleRect.left - objectRect.left + (triangleRect.width - objectRect.width) / 2;
+    const offsetY = triangleRect.top - objectRect.top + (triangleRect.height - objectRect.height) / 2;
+    this.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+
+    // Check for a win condition
+    checkWinCondition();
+  }
+}
+
+// Function to check for a win condition
+function checkWinCondition() {
+  // Define the possible winning combinations (triangles in a line)
+  const winCombinations = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // Horizontal lines
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // Vertical lines
+    [0, 4, 8], [2, 4, 6] // Diagonal lines
+  ];
+
+  // Check each winning combination
+  winCombinations.forEach(combination => {
+    const [index1, index2, index3] = combination;
+    const triangle1 = triangles[index1];
+    const triangle2 = triangles[index2];
+    const triangle3 = triangles[index3];
+
+    // Check if all three triangles are occupied by objects
+    if (triangle1.classList.contains('occupied') &&
+        triangle2.classList.contains('occupied') &&
+        triangle3.classList.contains('occupied')) {
+      // Get the object types in the occupied triangles
+      const objectType1 = triangle1.querySelector('.object').id;
+      const objectType2 = triangle2.querySelector('.object').id;
+      const objectType3 = triangle3.querySelector('.object').id;
+
+      // Check if the object types form a line
+      if (objectType1 !== objectType2 && objectType2 !== objectType3 && objectType1 !== objectType3) {
+        alert('You win!');
+      }
+    }
+  });
+}
+
+      </script>
+</body>
+</html>
